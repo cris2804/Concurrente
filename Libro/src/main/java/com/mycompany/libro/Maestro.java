@@ -21,31 +21,41 @@ public class Maestro {
         System.out.println("Nodo conectado: " + nodo.getInetAddress());
     }
 
-    // Recibe el libro del ClienteLibro y lo divide en fragmentos para los nodos
-    public void recibirLibro(String libro) throws IOException {
-        List<String> fragmentos = dividirLibro(libro, nodos.size());
+    // Recibe el libro del ClienteLibro como una lista de oraciones y lo distribuye entre los nodos
+    public void recibirLibro(List<String> oraciones) throws IOException {
+        List<List<String>> fragmentos = dividirOracionesEnFragmentos(oraciones, nodos.size());
         enviarFragmentosANodos(fragmentos);
     }
 
-    // Divide el libro en fragmentos del tamaño adecuado para cada nodo
-    private List<String> dividirLibro(String libro, int partes) {
-        int fragmentoTamano = libro.length() / partes;
-        List<String> fragmentos = new ArrayList<>();
-        for (int i = 0; i < partes; i++) {
-            int inicio = i * fragmentoTamano;
-            int fin = (i == partes - 1) ? libro.length() : inicio + fragmentoTamano;
-            fragmentos.add(libro.substring(inicio, fin));
+    // Divide la lista de oraciones en fragmentos equitativos para los nodos
+    private List<List<String>> dividirOracionesEnFragmentos(List<String> oraciones, int numNodos) {
+        List<List<String>> fragmentos = new ArrayList<>();
+        int numOracionesPorNodo = oraciones.size() / numNodos;
+
+        // Distribuir las oraciones de manera equitativa en fragmentos
+        for (int i = 0; i < numNodos; i++) {
+            int inicio = i * numOracionesPorNodo;
+            int fin = (i == numNodos - 1) ? oraciones.size() : inicio + numOracionesPorNodo;
+            fragmentos.add(new ArrayList<>(oraciones.subList(inicio, fin)));
         }
+
         return fragmentos;
     }
 
-    // Envía los fragmentos de texto a cada uno de los nodos conectados
-    private void enviarFragmentosANodos(List<String> fragmentos) throws IOException {
+    // Envía los fragmentos de oraciones a cada uno de los nodos conectados
+    private void enviarFragmentosANodos(List<List<String>> fragmentos) throws IOException {
         for (int i = 0; i < nodos.size(); i++) {
             Socket nodo = nodos.get(i);
             PrintWriter out = new PrintWriter(nodo.getOutputStream(), true);
-            System.out.println("Enviando fragmento al nodo " + (i + 1) + ": " + fragmentos.get(i));
-            out.println(fragmentos.get(i)); // Enviar el fragmento al nodo
+            List<String> fragmento = fragmentos.get(i);
+
+            System.out.println("Enviando fragmento al nodo " + (i + 1) + ": " + fragmento);
+            
+            // Enviar cada oración del fragmento
+            for (String oracion : fragmento) {
+                out.println(oracion);
+            }
+
             out.println("END");  // Indicar el final del fragmento
         }
     }
@@ -78,6 +88,10 @@ public class Maestro {
 
             // Almacenar las matrices en las listas de pesos
             agregarPesosNodo(W1, W2);
+            System.out.println("Matriz W1 recibida:");
+            //imprimirMatriz(W1);
+            System.out.println("Matriz W2 recibida:");
+            //imprimirMatriz(W2);
 
             System.out.println("Matrices W1 y W2 recibidas y almacenadas correctamente.");
         } catch (IOException e) {
@@ -105,6 +119,15 @@ public class Maestro {
     public void agregarPesosNodo(double[][] W1, double[][] W2) {
         pesosW1.add(W1);
         pesosW2.add(W2);
+    }
+
+    private void imprimirMatriz(double[][] matriz) {
+        for (double[] fila : matriz) {
+            for (double valor : fila) {
+                System.out.print(valor + "\t");  // Imprimir cada valor separado por un tabulador
+            }
+            System.out.println();  // Nueva línea después de cada fila
+        }
     }
 
     // Retorna las matrices W1 de todos los nodos
@@ -152,11 +175,17 @@ public class Maestro {
                     System.out.println("Cliente conectado: " + cliente.getInetAddress());
 
                     BufferedReader in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
-                    String libro = in.readLine();
+                    List<String> oraciones = new ArrayList<>();
+                    String linea;
 
-                    if (libro != null) {
-                        System.out.println("Libro recibido: " + libro);
-                        maestro.recibirLibro(libro);
+                    // Leer cada oración enviada por el ClienteLibro
+                    while ((linea = in.readLine()) != null && !linea.equals("FIN_LIBRO")) {
+                        oraciones.add(linea);
+                    }
+
+                    if (!oraciones.isEmpty()) {
+                        System.out.println("Libro recibido con " + oraciones.size() + " oraciones.");
+                        maestro.recibirLibro(oraciones);
                     }
 
                     PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
