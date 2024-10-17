@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.libro;
 
 import java.io.*;
@@ -13,7 +10,7 @@ public class ClienteModelo {
 
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket("localhost", 6000);
+            Socket socket = new Socket("localhost", 3001);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
