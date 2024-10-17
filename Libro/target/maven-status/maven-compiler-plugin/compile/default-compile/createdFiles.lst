@@ -1,3 +1,5 @@
-com\mycompany\libro\ManejadorNodo.class
-com\mycompany\libro\NodoCliente.class
+com\mycompany\libro\RedNeuronal.class
+com\mycompany\libro\ClienteDeLibro.class
 com\mycompany\libro\ServidorMaestro.class
+com\mycompany\libro\ServidorMaestro$ManejadorNodo.class
+com\mycompany\libro\NodoCliente.class
