@@ -1,7 +1,9 @@
-com\mycompany\libro\Preprocessor.class
-com\mycompany\libro\Maestro.class
-com\mycompany\libro\Nodo.class
-com\mycompany\libro\ClienteModelo.class
-com\mycompany\libro\Main.class
-com\mycompany\libro\NeuralNetwork.class
-com\mycompany\libro\ClienteLibro.class
+com/mycompany/libro/NeuralNetwork.class
+com/mycompany/libro/Maestro.class
+com/mycompany/libro/Nodo$NeuralNetwork.class
+com/mycompany/libro/Main.class
+com/mycompany/libro/Nodo$Preprocessor.class
+com/mycompany/libro/ClienteModelo.class
+com/mycompany/libro/ClienteLibro.class
+com/mycompany/libro/Nodo.class
+com/mycompany/libro/Preprocessor.class
